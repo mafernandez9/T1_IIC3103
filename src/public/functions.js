@@ -218,6 +218,7 @@ function onMessage(evt) {
         //poder enviar mensaje
     }
 }
+
 function buildTable(data) {
     var table = document.getElementById("myTable");
     for (var i = 0; i < data.length; i++) {
@@ -236,5 +237,3 @@ const buildtable = async() => {
     console.log('hola');
     buildTable(table_data);
 }
-
-buildtable();
