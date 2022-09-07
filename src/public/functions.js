@@ -218,10 +218,18 @@ function onMessage(evt) {
         //poder enviar mensaje
     }
 }
+const build = async () => {
+    await sleep(3000);
+    console.log(table_data.length)
+    buildTable(table_data);
+}
+build()
 
 function buildTable(data) {
     var table = document.getElementById("myTable");
     for (var i = 0; i < data.length; i++) {
+        console.log('hola');
+        console.log(data[i].id);
 
         var row = `<tr>
                       <td>${data[i].id}</td>
@@ -231,4 +239,3 @@ function buildTable(data) {
                    table.innerHTML += row
     }
 }
-buildTable(table_data);
