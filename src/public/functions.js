@@ -232,7 +232,7 @@ function buildTable(data) {
 }
 
 const buildtable = async() => {
-    await sleep(1000);
+    await sleep(100);
     console.log('hola');
     buildTable(table_data);
 }
