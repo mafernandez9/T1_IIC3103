@@ -5,6 +5,7 @@ const sleep = (milliseconds) => {
   }
 var id_lat = {};
 var id_lon = {};
+var table_data = [];
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -90,6 +91,7 @@ function onMessage(evt) {
         const t_airport_location_la = Object.values(message.flights)[i].destination.location.lat;
         const t_airport_location_lo = Object.values(message.flights)[i].destination.location.long;
         const d_date = Object.values(message.flights)[i].departure_date;
+        table_data.push({"id": flight_id, a_salida: f_airport_name, a_llegada: t_airport_name});
         var redIcon = L.icon({
             iconUrl: 'src/public/red.png',        
             iconSize:     [20, 20], // size of the icon
@@ -216,3 +218,23 @@ function onMessage(evt) {
         //poder enviar mensaje
     }
 }
+function buildTable(data) {
+    var table = document.getElementById("myTable");
+    for (var i = 0; i < data.length; i++) {
+
+        var row = `<tr>
+                      <td>${data[i].id}</td>
+                      <td>${data[i].a_salida}</td>
+                      <td>${data[i].a_llegada}</td>
+                   </tr>`
+                   table.innerHTML += row
+    }
+}
+
+const buildtable = async() => {
+    await sleep(1000);
+    console.log('hola');
+    buildTable(table_data);
+}
+
+buildtable();
