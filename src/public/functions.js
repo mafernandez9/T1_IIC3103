@@ -226,7 +226,7 @@ build()
 
 function buildTable(data) {
     var table = document.getElementById("myTable");
-    for (var i = 0; i < data.length; i++) {
+    for (var i = 0; i < 10; i++) {
         var row = `<tr>
                       <td>${data[i].id}</td>
                       <td>${data[i].a_salida}</td>
