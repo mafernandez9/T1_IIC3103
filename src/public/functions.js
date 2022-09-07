@@ -1,4 +1,7 @@
-﻿var map = L.map('map').setView([0, 0], 2);
+﻿//Código basado principalmente en https://www.jacobsoft.com.mx/es_mx/implementacion-de-websockets-con-node-js/
+//Código también obtenido de https://leafletjs.com/examples/quick-start/
+
+var map = L.map('map').setView([0, 0], 2);
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
