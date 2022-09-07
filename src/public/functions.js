@@ -148,17 +148,20 @@ function onMessage(evt) {
         });
         var marker_f = L.marker([lat_pos, lon_pos], {icon: planeIcon}).addTo(map);
         marker_f.bindPopup(`ID Vuelo :${flight_id}<br> airline: ${airline_name} <br> Capitán: ${p_captain} <br> ETA: ${ETA}`);
-        const remove = async () => {
-            await sleep(1000);
-            marker_f.remove();
-        }
-        remove();
         var circle = L.circle([lat_pos, lon_pos], {
             color: 'green',
             fillColor: '#f03',
             fillopacity: 0.5,
             radius: 100
         }).addTo(map);
+        const remove = async () => {
+            await sleep(1000);
+            marker_f.remove();
+            await sleep(100000);
+            circle.remove();
+        }
+        remove();
+
        
     }
         //console.log(message.plane.captain);
