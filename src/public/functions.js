@@ -231,9 +231,4 @@ function buildTable(data) {
                    table.innerHTML += row
     }
 }
-
-const buildtable = async() => {
-    await sleep(100);
-    console.log('hola');
-    buildTable(table_data);
-}
+buildTable(table_data);
