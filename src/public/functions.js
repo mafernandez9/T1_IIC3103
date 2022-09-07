@@ -3,6 +3,8 @@
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
   }
+var id_lat = {};
+var id_lon = {};
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -31,11 +33,18 @@ function wsConnect() {
     };
 }
 
+function sendText(evt) {
+    evt.preventDefault();
+    var campo = evt.target.text;
+    sendMessage(campo.value);
+    campo.value = "";
+}
+
 function sendUser() {
     socket.send(JSON.stringify({
         "type": "join",
         "id": "f831d20e-b9b9-4846-bf53-deee0480150a",
-        "username": "MF"
+        "username": "MatiasFernandez"
     }));
 }
 
@@ -47,8 +56,8 @@ function sendMessage(content) {
 }
 
 function onOpen() {
-    document.getElementById("enviar").disabled=false;
     sendUser();
+    document.getElementById("enviar").disabled=false;
 }
 
 function onClose() {
@@ -83,8 +92,8 @@ function onMessage(evt) {
         const d_date = Object.values(message.flights)[i].departure_date;
         var redIcon = L.icon({
             iconUrl: 'src/public/red.png',        
-            iconSize:     [38, 95], // size of the icon
-            shadowSize:   [50, 64], // size of the shadow
+            iconSize:     [20, 20], // size of the icon
+            shadowSize:   [0, 0], // size of the shadow
             iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
             shadowAnchor: [4, 62],  // the same for the shadow
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
@@ -93,8 +102,8 @@ function onMessage(evt) {
         marker_f.bindPopup(`ID Vuelo:${flight_id}<br> Nombre aeropuerto: ${f_airport_name} <br> Ciudad: ${f_airport_city_name} <br> País: ${f_airport_country_name}`);
         var blueIcon = L.icon({
             iconUrl: 'src/public/blue.png',
-            iconSize:     [38, 95], // size of the icon
-            shadowSize:   [50, 64], // size of the shadow
+            iconSize:     [20, 20], // size of the icon
+            shadowSize:   [0, 0], // size of the shadow
             iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
             shadowAnchor: [4, 62],  // the same for the shadow
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
@@ -125,6 +134,8 @@ function onMessage(evt) {
         const distance = message.plane.distance;
         const arrival = message.plane.arrival;
         const status = message.plane.status;
+        id_lat[flight_id]= lat_pos;
+        id_lon[flight_id] = lon_pos;
         var planeIcon = L.icon({
             iconUrl: 'src/public/plane.png',
             iconSize:     [38, 95], // size of the icon
@@ -151,12 +162,53 @@ function onMessage(evt) {
         //console.log(message.plane.captain);
     else if (message.type == "take-off") {
         const flight_id = message.flight_id;
+        let a_lat = id_lat[flight_id];
+        let a_lon = id_lon[flight_id];
+        var marker_t = L.marker([a_lat, a_lon]).addTo(map);
+        const remove = async () => {
+            await sleep(10000);
+            marker_t.remove();
+        }
+        remove();
     }
     else if (message.type == "landing") {
         const flight_id = message.flight_id;
+        let a_lat = id_lat[flight_id];
+        let a_lon = id_lon[flight_id];
+        var landingIcon = L.icon({
+            iconUrl: 'src/public/landing.png',
+            iconSize:     [38, 95], // size of the icon
+            shadowSize:   [50, 64], // size of the shadow
+            iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+            shadowAnchor: [4, 62],  // the same for the shadow
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+        });
+        var marker_l = L.marker([a_lat, a_lon], {icon: landingIcon}).addTo(map);
+        const remove = async () => {
+            await sleep(10000);
+            marker_l.remove();
+        }
+        remove();
     }
     else if (message.type == "crashed") {
         const flight_id = message.flight_id;
+        console.log("crashed");
+        let a_lat = id_lat[flight_id];
+        let a_lon = id_lon[flight_id];
+        var crashIcon = L.icon({
+            iconUrl: 'src/public/crashed.png',
+            iconSize:     [38, 95], // size of the icon
+            shadowSize:   [50, 64], // size of the shadow
+            iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+            shadowAnchor: [4, 62],  // the same for the shadow
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+        });
+        var marker_c = L.marker([a_lat, a_lon], {icon: crashIcon}).addTo(map);
+        const remove = async () => {
+            await sleep(60000);
+            marker_c.remove();
+        }
+        remove();
     }
     else if (message.type == "message") {
         var area = document.getElementById("mensajes")
@@ -164,7 +216,3 @@ function onMessage(evt) {
         //poder enviar mensaje
     }
 }
-function sendAnswer(evt, content) {
-    var to_send = evt.target.text;
-    sendMessage(content);
-} 
