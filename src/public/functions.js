@@ -1,4 +1,4 @@
-﻿var map = L.map('map').setView([51.505, -0.09], 0);
+﻿var map = L.map('map').setView([0, 0], 2);
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -70,7 +70,7 @@ function onClose() {
 function onMessage(evt) {
     var message = JSON.parse(evt.data);
     if (message.type == "flights") {
-        for (let i = 0; i <10; i++) {
+        for (let i = 0; i < Object.values(message.flights).length; i++) {
         const flight_id = Object.values(message.flights)[i].id;
         const f_airport_id = Object.values(message.flights)[i].departure.id;
         const f_airport_name = Object.values(message.flights)[i].departure.name;
@@ -149,7 +149,7 @@ function onMessage(evt) {
         var marker_f = L.marker([lat_pos, lon_pos], {icon: planeIcon}).addTo(map);
         marker_f.bindPopup(`ID Vuelo :${flight_id}<br> airline: ${airline_name} <br> Capitán: ${p_captain} <br> ETA: ${ETA}`);
         const remove = async () => {
-            await sleep(2000);
+            await sleep(1000);
             marker_f.remove();
         }
         remove();
@@ -167,8 +167,14 @@ function onMessage(evt) {
         let a_lat = id_lat[flight_id];
         let a_lon = id_lon[flight_id];
         var marker_t = L.marker([a_lat, a_lon]).addTo(map);
+        var popup_c = L.popup().
+        setLatLng([a_lat,a_lon])
+        .setContent(`vuelo ${flight_id} despega`)
+        .openOn(map);
         const remove = async () => {
-            await sleep(10000);
+            await sleep(1000);
+            popup_c.remove();
+            await sleep(9000);
             marker_t.remove();
         }
         remove();
@@ -186,8 +192,14 @@ function onMessage(evt) {
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
         var marker_l = L.marker([a_lat, a_lon], {icon: landingIcon}).addTo(map);
+        var popup_l = L.popup().
+        setLatLng([a_lat,a_lon])
+        .setContent(`avión ${flight_id} ha aterrizado`)
+        .openOn(map);
         const remove = async () => {
-            await sleep(10000);
+            await sleep(1000);
+            popup_l.remove();
+            await sleep(9000);
             marker_l.remove();
         }
         remove();
@@ -205,11 +217,17 @@ function onMessage(evt) {
             shadowAnchor: [4, 62],  // the same for the shadow
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
+        var popup_c = L.popup().
+        setLatLng([a_lat,a_lon])
+        .setContent("ACCIDENTE, ENVIAR AYUDA")
+        .openOn(map);
         var marker_c = L.marker([a_lat, a_lon], {icon: crashIcon}).addTo(map);
         const remove = async () => {
             await sleep(60000);
+            popup_c.remove();
             marker_c.remove();
         }
+        console.log("crash");
         remove();
     }
     else if (message.type == "message") {
@@ -226,7 +244,7 @@ build()
 
 function buildTable(data) {
     var table = document.getElementById("myTable");
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 15; i++) {
         var row = `<tr>
                       <td>${data[i].id}</td>
                       <td>${data[i].a_salida}</td>
